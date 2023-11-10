@@ -1,95 +1,91 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client';
+import { useState } from 'react';
+
+const listItemStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '8px',
+  border: '1px solid #ccc',
+  margin: '4px 0',
+};
+
+const headingStyle = {
+  textAlign: 'center',
+  color: 'aqua',
+};
 
 export default function Home() {
+  const [todos, setTodos] = useState([]);
+  const [completedTodos, setCompletedTodos] = useState([]);
+  const [newTodo, setNewTodo] = useState('');
+
+  const addTodo = () => {
+    if (newTodo.trim() !== '') {
+      const timestamp = new Date().toLocaleString();
+      setTodos([...todos, { text: newTodo, timestamp, completed: false }]);
+      setNewTodo('');
+    }
+  };
+
+  const removeTodo = (index) => {
+    const updatedTodos = todos.filter((_, i) => i !== index);
+    setTodos(updatedTodos);
+  };
+
+  const toggleTodo = (index) => {
+    const updatedTodos = [...todos];
+    const completedTodo = updatedTodos.splice(index, 1)[0];
+    completedTodo.completed = true;
+    completedTodo.completedTimestamp = new Date().toLocaleString();
+    setCompletedTodos([...completedTodos, completedTodo]);
+    setTodos(updatedTodos);
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <div>
+      <h1 style={headingStyle}>TODO APP MADE BY TIMMY</h1>
+      <div style={{ display: 'flex', marginBottom: '8px' }}>
+        <input
+          type="text"
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
+          style={{ flex: '1', marginRight: '8px', padding: '4px' }}
         />
+        <button onClick={addTodo} style={{ padding: '4px 8px' }}>
+          Add Todo
+        </button>
       </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+      <h2>Tasks</h2>
+      <ul style={{ listStyleType: 'none', padding: '0' }}>
+        {todos.map((todo, index) => (
+          <li key={index} style={listItemStyle}>
+            <label>
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => toggleTodo(index)}
+              />
+              {todo.text}
+            </label>
+            <button onClick={() => removeTodo(index)}>Remove</button>
+            <span>Uploaded: {todo.timestamp}</span>
+          </li>
+        ))}
+      </ul>
+      <h2>Completed Tasks</h2>
+      <ul style={{ listStyleType: 'none', padding: '0' }}>
+        {completedTodos.map((todo, index) => (
+          <li key={index} style={listItemStyle}>
+            <label>
+              <input type="checkbox" checked={true} readOnly />
+              {todo.text}
+            </label>
+            <span>Uploaded: {todo.timestamp}</span>
+            <span>Completed: {todo.completedTimestamp}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
